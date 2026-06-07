@@ -1,0 +1,99 @@
+body{
+    background-color: lightcoral;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+.container{
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px;
+}
+
+.expenses, .tasks{
+    flex: 1;
+    padding: 20px;
+    border-radius: 5px;
+    border: solid black 1px;
+    background-color: beige;
+}
+#main-heading{
+    color: gold;
+    font-size: 40px;
+    font-style: italic;
+    font-weight: bold;
+    text-align: center;
+        text-shadow: 
+        -2px -2px 0 #000,  
+         2px -2px 0 #000,
+        -2px  2px 0 #000,
+         2px  2px 0 #000;
+
+}
+.heading{
+    text-align: center;
+}
+.e-input{
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    margin: 10px;
+}
+.e-name, .e-amnt, .t-name{
+    border-radius: 3px;
+    border: solid black 1px;
+    padding: 6px;
+    margin: 10px;
+}
+.e-total {
+    font-weight: 500;
+    font-size: 16px;
+    color: darkslategrey;
+}
+.e-add, .t-add{
+    color:white;
+    background-color: rgb(255, 30, 75);
+    border-radius: 5px;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    box-shadow: 3px 6px 3px grey;
+    transition: all 0.2s ease;
+}
+.t-add:active, .e-add:active{
+    box-shadow: 1px 2px 2px;
+}
+.e-add:hover , .t-add:hover{
+  background-color: rgb(255, 60, 100);
+}
+.delete-btn{
+    margin: 10px;
+    padding: 0;
+    border: none;
+    background-color: transparent;
+    color: black;
+    cursor: pointer;
+    outline: none;
+}
+.delete-btn:hover{
+    opacity: 0.7;
+    transform: scale(1.05);
+    transition: all 0.2 ease;
+}
+.checkbox{
+    cursor: pointer;
+}
+.t-list {
+    list-style: none;   
+    padding: 0;
+}
+
+.t-list li {
+    cursor: pointer;
+    padding: 4px 0;
+}
+
+
+
+
+
