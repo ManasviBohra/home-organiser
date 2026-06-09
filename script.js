@@ -1,73 +1,132 @@
-let total=0
-document.querySelector(".e-add").addEventListener("click", add_expense)
-function add_expense(){
-    let name=document.querySelector(".e-name").value 
-    let amnt=document.querySelector(".e-amnt").value
+const API = "http://127.0.0.1:5000"
 
-    if (name==='' || amnt===''){
+// ── EXPENSES ──────────────────────────────
+
+function loadExpenses() {
+    fetch(API + "/expenses")
+        .then(r => r.json())
+        .then(data => {
+            document.querySelector(".e-list").innerHTML = ""
+            let total = 0
+            data.forEach(expense => {
+                displayExpense(expense)
+                total += expense.amount
+            })
+            document.querySelector(".e-total").innerText = "Total: Rs " + total
+        })
+}
+
+function displayExpense(expense) {
+    let li = document.createElement("li")
+    li.innerText = expense.name + " - Rs " + expense.amount
+
+    let deletebtn = document.createElement("button")
+    deletebtn.innerHTML = "&#128465;"
+    deletebtn.classList.add("delete-btn")
+    deletebtn.addEventListener("click", function() {
+        fetch(API + "/expenses/" + expense.id, { method: "DELETE" })
+            .then(() => loadExpenses())
+    })
+
+    li.appendChild(deletebtn)
+    document.querySelector(".e-list").appendChild(li)
+}
+
+document.querySelector(".e-add").addEventListener("click", function() {
+    let name = document.querySelector(".e-name").value
+    let amnt = document.querySelector(".e-amnt").value
+
+    if (name === '' || amnt === '') {
         alert("Please fill both fields")
         return
     }
 
-    let li=document.createElement("li")
-    li.innerText= name + "- Rs " + amnt 
-
-    let deletebtn=document.createElement("button")
-    deletebtn.innerHTML="&#128465;"
-
-    deletebtn.addEventListener("click", function(){
-        li.remove()
-        total-=Number(amnt)
-        document.querySelector(".e-total").innerText="Total Expenditure -- Rs " + total
+    fetch(API + "/expenses", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: name, amount: Number(amnt) })
     })
-    deletebtn.classList.add("delete-btn")
+    .then(r => r.json())
+    .then(data => {
+        displayExpense(data)
+        document.querySelector(".e-name").value = ''
+        document.querySelector(".e-amnt").value = ''
+        loadExpenses()
+    })
+})
 
-    li.appendChild(deletebtn)
+// ── TASKS ──────────────────────────────
 
-    document.querySelector(".e-list").appendChild(li)
-
-    document.querySelector(".e-name").value=''
-    document.querySelector(".e-amnt").value=''
-
-    total+=Number(amnt)
-    document.querySelector(".e-total").innerText="Total Expenditure -- Rs " + total
-
+function loadTasks() {
+    fetch(API + "/tasks")
+        .then(r => r.json())
+        .then(data => {
+            document.querySelector(".t-list").innerHTML = ""
+            data.forEach(task => {
+                displayTask(task)
+            })
+        })
 }
 
-document.querySelector(".t-add").addEventListener("click", add_task)
+function displayTask(task) {
+    let li = document.createElement("li")
+    li.innerText = task.name
 
-function add_task(){
-    let task= document.querySelector(".t-name").value
+    if (task.done) {
+        li.style.textDecoration = "line-through"
+    }
 
-    if (task===''){
+    let checkbox = document.createElement("input")
+    checkbox.type = "checkbox"
+    checkbox.checked = task.done
+    checkbox.classList.add("checkbox")
+
+    checkbox.addEventListener("change", function() {
+        fetch(API + "/tasks/" + task.id, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ done: checkbox.checked })
+        })
+        .then(() => loadTasks())
+    })
+
+    let deletebtn = document.createElement("button")
+    deletebtn.innerHTML = "&#128465;"
+    deletebtn.classList.add("delete-btn")
+    deletebtn.addEventListener("click", function() {
+        fetch(API + "/tasks/" + task.id, { method: "DELETE" })
+            .then(() => loadTasks())
+    })
+
+    li.appendChild(checkbox)
+    li.appendChild(deletebtn)
+    document.querySelector(".t-list").appendChild(li)
+}
+
+document.querySelector(".t-add").addEventListener("click", function() {
+    let task = document.querySelector(".t-name").value
+
+    if (task === '') {
         alert("Please Enter a Task")
         return
     }
 
-    let li= document.createElement("li")
-    li.innerText=task
-
-    let checkbox= document.createElement("input")
-    checkbox.type= "checkbox"
-    checkbox.addEventListener("change", function(){
-        if (checkbox.checked){ li.style.textDecoration="line-through"}
-        else{li.style.textDecoration= "none"}
+    fetch(API + "/tasks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: task })
     })
-    checkbox.classList.add("checkbox")
-
-    let deletebtn= document.createElement("button")
-    deletebtn.innerHTML="&#128465;"
-
-    deletebtn.addEventListener("click", function(){
-        li.remove()
+    .then(r => r.json())
+    .then(data => {
+        document.querySelector(".t-name").value = ''
+        loadTasks()
     })
-    deletebtn.classList.add("delete-btn")
+})
 
-    li.appendChild(checkbox)
-    li.appendChild(deletebtn)
+// load tasks when page opens
+loadTasks()
 
-    document.querySelector(".t-list").appendChild(li)
 
-    document.querySelector(".t-name").value=''
-
-}
+// load everything when page opens
+loadExpenses()
+loadTasks()
